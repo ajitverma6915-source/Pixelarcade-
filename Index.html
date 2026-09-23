@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Arcade - 5-in-1 Mini Games</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1a1a2e);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: #00ff88;
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+            letter-spacing: 2px;
+        }
+
+        p.subtitle {
+            color: #a0aec0;
+            margin-top: 5px;
+        }
+
+        /* MENU GRID */
+        .arcade-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #00d2ff;
+            border-radius: 12px;
+            padding: 25px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2);
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            border-color: #00ff88;
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.4);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .game-card .icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .game-card h3 {
+            font-size: 1.3rem;
+            color: #fff;
+        }
+
+        /* GAME CONTAINERS */
+        .game-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 450px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid #00ff88;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        .back-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #ff6b81;
+        }
+
+        /* BUTTON STYLES */
+        .btn {
+            background: #00d2ff;
+            color: #000;
+            border: none;
+            padding: 10px 18px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background: #00ff88;
+        }
+
+        /* SNAKE GAME */
+        canvas {
+            background: #000;
+            border: 2px solid #00ff88;
+            border-radius: 8px;
+        }
+        .snake-controls {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            gap: 8px;
+        }
+        .s-btn {
+            background: #16213e;
+            color: #00ff88;
+            border: 1px solid #00ff88;
+            padding: 12px;
+            font-size: 18px;
+            border-radius: 6px;
+            text-align: center;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        /* TIC TAC TOE */
+        .ttt-board {
+            display: grid;
+            grid-template-columns: repeat(3, 80px);
+            gap: 8px;
+            margin-top: 15px;
+        }
+        .ttt-cell {
+            width: 80px;
+            height: 80px;
+            background: #16213e;
+            border: 2px solid #00d2ff;
+            border-radius: 8px;
+            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* MEMORY GAME */
+        .memory-board {
+            display: grid;
+            grid-template-columns: repeat(4, 65px);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .mem-card {
+            width: 65px;
+            height: 65px;
+            background: #16213e;
+            border: 2px solid #00d2ff;
+            border-radius: 8px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* RPS & GUESS */
+        .rps-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .rps-btn {
+            font-size: 2.5rem;
+            background: #16213e;
+            border: 2px solid #00d2ff;
+            border-radius: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 6px;
+            border: 1px solid #00d2ff;
+            width: 140px;
+            text-align: center;
+            margin-top: 10px;
+            background: #0f172a;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🎮 PIXEL ARCADE</h1>
+        <p class="subtitle">Select a game & start playing!</p>
+    </header>
+
+    <!-- ARCADE MAIN MENU -->
+    <div id="main-menu" class="arcade-grid">
+        <div class="game-card" onclick="openGame('snake')">
+            <div class="icon">🐍</div>
+            <h3>Snake Classic</h3>
+        </div>
+        <div class="game-card" onclick="openGame('ttt')">
+            <div class="icon">❌⭕</div>
+            <h3>Tic-Tac-Toe</h3>
+        </div>
+        <div class="game-card" onclick="openGame('guess')">
+            <div class="icon">🔢</div>
+            <h3>Guess Number</h3>
+        </div>
+        <div class="game-card" onclick="openGame('memory')">
+            <div class="icon">🧠</div>
+            <h3>Memory Match</h3>
+        </div>
+        <div class="game-card" onclick="openGame('rps')">
+            <div class="icon">🪨✂️📄</div>
+            <h3>Rock Paper Scissors</h3>
+        </div>
+    </div>
+
+    <!-- 1. SNAKE GAME SCREEN -->
+    <div id="snake-screen" class="game-screen">
+        <button class="back-btn" onclick="showMenu()">⬅️ Main Menu</button>
+        <h2>🐍 Snake Game</h2>
+        <p style="margin: 10px 0;">Score: <span id="snake-score">0</span></p>
+        <canvas id="snakeCanvas" width="300" height="300"></canvas>
+        <div class="snake-controls">
+            <div></div><div class="s-btn" onclick="changeSnakeDir('UP')">⬆️</div><div></div>
+            <div class="s-btn" onclick="changeSnakeDir('LEFT')">⬅️</div>
+            <div class="s-btn" onclick="changeSnakeDir('DOWN')">⬇️</div>
+            <div class="s-btn" onclick="changeSnakeDir('RIGHT')">➡️</div>
+        </div>
+    </div>
+
+    <!-- 2. TIC TAC TOE SCREEN -->
+    <div id="ttt-screen" class="game-screen">
+        <button class="back-btn" onclick="showMenu()">⬅️ Main Menu</button>
+        <h2>❌⭕ Tic-Tac-Toe</h2>
+        <p id="ttt-status" style="margin-top: 10px;">Player X's Turn</p>
+        <div class="ttt-board" id="ttt-board"></div>
+        <button class="btn" onclick="resetTTT()">Restart Game</button>
+    </div>
+
+    <!-- 3. GUESS NUMBER SCREEN -->
+    <div id="guess-screen" class="game-screen">
+        <button class="back-btn" onclick="showMenu()">⬅️ Main Menu</button>
+        <h2>🔢 Guess Number (1-100)</h2>
+        <p style="margin-top:10px;">Guess a number between 1 & 100:</p>
+        <input type="number" id="guessInput" min="1" max="100" placeholder="Enter number">
+        <button class="btn" onclick="checkGuess()">Check Guess</button>
+        <p id="guessResult" style="margin-top: 15px; font-weight: bold;"></p>
+    </div>
+
+    <!-- 4. MEMORY MATCH SCREEN -->
+    <div id="memory-screen" class="game-screen">
+        <button class="back-btn" onclick="showMenu()">⬅️ Main Menu</button>
+        <h2>🧠 Memory Card Match</h2>
+        <p style="margin-top: 10px;">Find matching pairs!</p>
+        <div class="memory-board" id="memory-board"></div>
+        <button class="btn" onclick="resetMemory()">Restart Game</button>
+    </div>
+
+    <!-- 5. ROCK PAPER SCISSORS SCREEN -->
+    <div id="rps-screen" class="game-screen">
+        <button class="back-btn" onclick="showMenu()">⬅️ Main Menu</button>
+        <h2>🪨📄✂️ Rock Paper Scissors</h2>
+        <div class="rps-options">
+            <button class="rps-btn" onclick="playRPS('🪨')">🪨</button>
+            <button class="rps-btn" onclick="playRPS('📄')">📄</button>
+            <button class="rps-btn" onclick="playRPS('✂️')">✂️</button>
+        </div>
+        <div id="rps-result" style="margin-top: 20px; text-align: center; font-size: 1.1rem;">Choose your move!</div>
+    </div>
+
+    <script>
+        // NAVIGATION SYSTEM
+        function openGame(gameId) {
+            document.getElementById('main-menu').style.display = 'none';
+            document.querySelectorAll('.game-screen').forEach(s => s.style.display = 'none');
+            
+            if(gameId === 'snake') {
+                document.getElementById('snake-screen').style.display = 'flex';
+                startSnake();
+            } else if(gameId === 'ttt') {
+                document.getElementById('ttt-screen').style.display = 'flex';
+                resetTTT();
+            } else if(gameId === 'guess') {
+                document.getElementById('guess-screen').style.display = 'flex';
+                startGuess();
+            } else if(gameId === 'memory') {
+                document.getElementById('memory-screen').style.display = 'flex';
+                resetMemory();
+            } else if(gameId === 'rps') {
+                document.getElementById('rps-screen').style.display = 'flex';
+                document.getElementById('rps-result').innerHTML = "Choose your move!";
+            }
+        }
+
+        function showMenu() {
+            document.querySelectorAll('.game-screen').forEach(s => s.style.display = 'none');
+            document.getElementById('main-menu').style.display = 'grid';
+            if (snakeInterval) clearInterval(snakeInterval);
+        }
+
+        // --- 1. SNAKE GAME LOGIC ---
+        const canvas = document.getElementById("snakeCanvas");
+        const ctx = canvas.getContext("2d");
+        const box = 15;
+        let snake, food, snakeDir, snakeScore, snakeInterval;
+
+        function startSnake() {
+            if (snakeInterval) clearInterval(snakeInterval);
+            snake = [{ x: 9 * box, y: 10 * box }];
+            food = { x: Math.floor(Math.random() * 19) * box, y: Math.floor(Math.random() * 19) * box };
+            snakeDir = "RIGHT";
+            snakeScore = 0;
+            document.getElementById("snake-score").innerText = snakeScore;
+            snakeInterval = setInterval(drawSnake, 120);
+        }
+
+        function changeSnakeDir(dir) {
+            if(dir === 'LEFT' && snakeDir !== 'RIGHT') snakeDir = 'LEFT';
+            if(dir === 'UP' && snakeDir !== 'DOWN') snakeDir = 'UP';
+            if(dir === 'RIGHT' && snakeDir !== 'LEFT') snakeDir = 'RIGHT';
+            if(dir === 'DOWN' && snakeDir !== 'UP') snakeDir = 'DOWN';
+        }
+
+        document.addEventListener("keydown", e => {
+            if(e.key === "ArrowLeft") changeSnakeDir('LEFT');
+            if(e.key === "ArrowUp") changeSnakeDir('UP');
+            if(e.key === "ArrowRight") changeSnakeDir('RIGHT');
+            if(e.key === "ArrowDown") changeSnakeDir('DOWN');
+        });
+
+        function drawSnake() {
+            ctx.fillStyle = "#000";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for(let i = 0; i < snake.length; i++) {
+                ctx.fillStyle = (i === 0) ? "#00ff88" : "#fff";
+                ctx.fillRect(snake[i].x, snake[i].y, box, box);
+            }
+
+            ctx.fillStyle = "#ff4757";
+            ctx.fillRect(food.x, food.y, box, box);
+
+            let snakeX = snake[0].x;
+            let snakeY = snake[0].y;
+
+            if(snakeDir === "LEFT") snakeX -= box;
+            if(snakeDir === "UP") snakeY -= box;
+            if(snakeDir === "RIGHT") snakeX += box;
+            if(snakeDir === "DOWN") snakeY += box;
+
+            if(snakeX === food.x && snakeY === food.y) {
+                snakeScore++;
+                document.getElementById("snake-score").innerText = snakeScore;
+                food = { x: Math.floor(Math.random() * 19) * box, y: Math.floor(Math.random() * 19) * box };
+            } else {
+                snake.pop();
+            }
+
+            let newHead = { x: snakeX, y: snakeY };
+
+            if(snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || collision(newHead, snake)) {
+                clearInterval(snakeInterval);
+                alert("Game Over! Your Score: " + snakeScore);
+                startSnake();
+            }
+
+            snake.unshift(newHead);
+        }
+
+        function collision(head, array) {
+            for(let i = 0; i < array.length; i++) {
+                if(head.x === array[i].x && head.y === array[i].y) return true;
+            }
+            return false;
+        }
+
+        // --- 2. TIC TAC TOE LOGIC ---
+        let tttBoard = ["", "", "", "", "", "", "", "", ""];
+        let tttTurn = "X";
+        let tttActive = true;
+
+        function resetTTT() {
+            tttBoard = ["", "", "", "", "", "", "", "", ""];
+            tttTurn = "X";
+            tttActive = true;
+            document.getElementById("ttt-status").innerText = "Player X's Turn";
+            const boardEl = document.getElementById("ttt-board");
+            boardEl.innerHTML = "";
+            for(let i = 0; i < 9; i++) {
+                const cell = document.createElement("div");
+                cell.classList.add("ttt-cell");
+                cell.onclick = () => handleTTTClick(i);
+                cell.id = `cell-${i}`;
+                boardEl.appendChild(cell);
+            }
+        }
+
+        function handleTTTClick(index) {
+            if(tttBoard[index] !== "" || !tttActive) return;
+            tttBoard[index] = tttTurn;
+            document.getElementById(`cell-${index}`).innerText = tttTurn;
+            
+            if(checkTTTWin()) {
+                document.getElementById("ttt-status").innerText = `🎉 Player ${tttTurn} Wins!`;
+                tttActive = false;
+                return;
+            }
+            if(!tttBoard.includes("")) {
+                document.getElementById("ttt-status").innerText = "🤝 It's a Draw!";
+                tttActive = false;
+                return;
+            }
+            tttTurn = tttTurn === "X" ? "O" : "X";
+            document.getElementById("ttt-status").innerText = `Player ${tttTurn}'s Turn`;
+        }
+
+        function checkTTTWin() {
+            const wins = [
+                [0,1,2], [3,4,5], [6,7,8],
+                [0,3,6], [1,4,7], [2,5,8],
+                [0,4,8], [2,4,6]
+            ];
+            return wins.some(w => tttBoard[w[0]] && tttBoard[w[0]] === tttBoard[w[1]] && tttBoard[w[0]] === tttBoard[w[2]]);
+        }
+
+        // --- 3. GUESS NUMBER LOGIC ---
+        let secretNum;
+        function startGuess() {
+            secretNum = Math.floor(Math.random() * 100) + 1;
+            document.getElementById("guessInput").value = "";
+            document.getElementById("guessResult").innerText = "";
+        }
+
+        function checkGuess() {
+            const val = parseInt(document.getElementById("guessInput").value);
+            const res = document.getElementById("guessResult");
+            if(!val) return;
+            if(val === secretNum) {
+                res.innerText = "🎉 Correct! You guessed it!";
+                res.style.color = "#00ff88";
+            } else if(val > secretNum) {
+                res.innerText = "📈 Too High! Try smaller.";
+                res.style.color = "#ff4757";
+            } else {
+                res.innerText = "📉 Too Low! Try bigger.";
+                res.style.color = "#00d2ff";
+            }
+        }
+
+        // --- 4. MEMORY MATCH LOGIC ---
+        const emojis = ['🍎', '🍎', '🍌', '🍌', '🍕', '🍕', '🍔', '🍔', '🎲', '🎲', '🎸', '🎸'];
+        let flippedCards = [], matchedCount = 0;
+
+        function resetMemory() {
+            flippedCards = [];
+            matchedCount = 0;
+            const board = document.getElementById("memory-board");
+            board.innerHTML = "";
+            const shuffled = emojis.sort(() => Math.random() - 0.5);
+            
+            shuffled.forEach((emoji, idx) => {
+                const card = document.createElement("div");
+                card.classList.add("mem-card");
+                card.dataset.emoji = emoji;
+                card.onclick = () => flipMemCard(card);
+                board.appendChild(card);
+            });
+        }
+
+        function flipMemCard(card) {
+            if(flippedCards.length < 2 && !card.innerText && !card.classList.contains("matched")) {
+                card.innerText = card.dataset.emoji;
+                flippedCards.push(card);
+
+                if(flippedCards.length === 2) {
+                    if(flippedCards[0].dataset.emoji === flippedCards[1].dataset.emoji) {
+                        flippedCards.forEach(c => c.classList.add("matched"));
+                        flippedCards = [];
+                        matchedCount += 2;
+                        if(matchedCount === emojis.length) alert("🎉 You matched all cards!");
+                    } else {
+                        setTimeout(() => {
+                            flippedCards.forEach(c => c.innerText = "");
+                            flippedCards = [];
+                        }, 800);
+                    }
+                }
+            }
+        }
+
+        // --- 5. ROCK PAPER SCISSORS LOGIC ---
+        function playRPS(playerMove) {
+            const moves = ['🪨', '📄', '✂️'];
+            const botMove = moves[Math.floor(Math.random() * 3)];
+            let resText = "";
+
+            if(playerMove === botMove) {
+                resText = `Tie! Both picked ${playerMove}`;
+            } else if(
+                (playerMove === '🪨' && botMove === '✂️') ||
+                (playerMove === '📄' && botMove === '🪨') ||
+                (playerMove === '✂️' && botMove === '📄')
+            ) {
+                resText = `🎉 You Win! ${playerMove} beats ${botMove}`;
+            } else {
+                resText = `❌ You Lost! ${botMove} beats ${playerMove}`;
+            }
+
+            document.getElementById("rps-result").innerText = resText;
+        }
+    </script>
+</body>
+</html>
+
